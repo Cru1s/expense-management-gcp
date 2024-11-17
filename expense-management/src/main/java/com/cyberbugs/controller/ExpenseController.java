@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Cruis
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/expense-management")
 public class ExpenseController {
     
     @Autowired
@@ -32,12 +33,12 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
     
-    @GetMapping
+    @GetMapping("/")
     public String home(){
         return "hello";
     }
     
-    @PostMapping("/save")
+    @PostMapping("/expense")
     public Expense createExpense(@RequestBody Expense expense){
       
         expense.setCreatedAt(Timestamp.now());
@@ -47,7 +48,12 @@ public class ExpenseController {
         return newExpense;
     }
     
-    @GetMapping("/list")
+    @GetMapping("/expenses/{id}")
+    public Expense findExpense(@PathVariable String id){
+        return this.expenseRepository.findById(id).block();
+    }
+    
+    @GetMapping("/expenses")
     public List<Expense> findAllExpense(){
         
         List<Expense> listOfExpenses = this.expenseRepository.findAll().collectList().block();
@@ -56,7 +62,7 @@ public class ExpenseController {
         
     }
     
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/expense/{id}")
     public String deleteExpense(@PathVariable String id){
         
         this.expenseRepository.deleteById(id).block();
@@ -64,12 +70,12 @@ public class ExpenseController {
         return "Expense is deleted successfully";  
     }
     
-    @PostMapping("/update/{id}")
-    public Expense updateExpense(@RequestBody Expense expense, @PathVariable String id) throws Exception{
-        
-        Expense updateExpense = expenseService.updateExpense(id, expense);
-        
-        return updateExpense;
-    }
+//    @PutMapping("/expense/{id}")
+//    public Expense updateExpense(@RequestBody Expense expense, @PathVariable String id) throws Exception{
+//        
+//        Expense updateExpense = expenseService.updateExpense(id, expense);
+//        
+//        return updateExpense;
+//    }
     
 }
